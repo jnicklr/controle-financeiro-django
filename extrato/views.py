@@ -4,13 +4,12 @@ from perfil.models import Conta, Categoria
 from .models import Valores
 from django.contrib import messages
 from django.contrib.messages import constants
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.template.loader import render_to_string
 import os
 from django.conf import settings
 from weasyprint import HTML
 from io import BytesIO
-
 
 def novo_valor(request):
     if request.method == "GET":
@@ -42,9 +41,11 @@ def novo_valor(request):
         else:
             conta.valor -= int(valor)
         conta.save()
+        
         # TODO: Mensagem processada de acordo com o tipo
+        nome_categoria = Categoria.objects.get(id=categoria)
 
-        messages.add_message(request, constants.SUCCESS, 'Categoria cadastrada com sucesso')
+        messages.add_message(request, constants.SUCCESS, f'Categoria {nome_categoria.categoria} cadastrada com sucesso')
         return redirect('/extrato/novo_valor')
 
 def view_extrato(request):

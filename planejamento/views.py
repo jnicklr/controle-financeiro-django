@@ -3,6 +3,7 @@ from perfil.models import *
 from extrato.models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from perfil.utils import calcula_total
 import json
 
 
@@ -21,4 +22,7 @@ def update_valor_categoria(request, id):
 
 def ver_planejamento(request):
     categorias = Categoria.objects.all()
-    return render(request, 'ver_planejamento.html', {'categorias': categorias})
+    despesa_mensal = calcula_total(categorias, 'valor_planejamento')
+    despesa_total = sum(categoria.total_gasto() for categoria in categorias)
+    percentual_mensal = int((despesa_total * 100) / despesa_mensal)
+    return render(request, 'ver_planejamento.html', {'categorias': categorias, 'despesa_mensal': despesa_mensal, 'despesa_total': despesa_total, 'percentual_mensal': percentual_mensal})

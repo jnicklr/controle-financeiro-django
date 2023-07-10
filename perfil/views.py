@@ -72,11 +72,18 @@ def cadastrar_banco(request):
     valor = request.POST.get('valor')
     icone = request.FILES.get('icone')
     
+    # TODO : Realizar Validações
     if len(apelido.strip()) == 0 or len(valor.strip()) == 0:
         messages.add_message(request, constants.ERROR, 'Preencha todos os campos')
         return redirect('/perfil/gerenciar/')
-
-    # TODO : Realizar Validações
+    try:
+        valor = float(valor)
+    except ValueError:
+        messages.error(request, 'O valor deve ser um número válido')
+        return redirect('/perfil/gerenciar/')
+    if valor < 0:
+        messages.error(request, 'O valor deve ser positivo')
+        return redirect('/perfil/gerenciar/')
     
     conta = Conta(
         apelido = apelido,
@@ -102,6 +109,9 @@ def cadastrar_categoria(request):
     essencial = bool(request.POST.get('essencial'))
 
     # TODO : Realizar Validações
+    if not nome or len(nome.strip()) == 0:
+        messages.add_message(request, constants.ERROR, 'Preencha todos os campos')
+        return redirect('/perfil/gerenciar/')
 
     categoria = Categoria(
         categoria=nome,
